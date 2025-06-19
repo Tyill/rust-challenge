@@ -26,19 +26,19 @@ impl Storage {
     fn new_client(self)->clickhouse::Client{
         let client = Client::default()
             .with_url(self.cng.db_url)
-           // .with_user(self.cng.db_user_name)
+            .with_user(self.cng.db_user_name)
             .with_password(self.cng.db_user_password)
             .with_database(self.cng.db_name);
         return client; 
     }
 
     pub async fn load_transfers(self, transfers: &[Transfer])->Result<(), Error>{
-        let clt = self.new_client();
-       
-        let mut insert = clt.inserter("tblUserTransfer")?;
+        let clt = self.new_client();       
+        let mut insert = clt.inserter("tblUserTransfer")?
+                                                .with_max_rows(transfers.len() as u64);
         for t in transfers{
             if let Err(err) = insert.write(t){
-                println!("{}", err)
+                return Err(err.into());
             }
         }
         insert.end().await?;

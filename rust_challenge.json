@@ -1,6 +1,6 @@
 {
-"db_url": "localhost:9000",
+"db_url": "http://localhost:8123",
 "db_name" : "stockdb",
-"db_user_name" : "alex",
+"db_user_name" : "default",
 "db_user_password" : "alpha3"
 }
