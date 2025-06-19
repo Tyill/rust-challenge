@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
+use clickhouse::Row;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Row, Serialize, Deserialize)]
 pub struct Transfer {
     pub ts: u64,
     pub from: String,
@@ -9,7 +10,7 @@ pub struct Transfer {
     pub usd_price: f64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct UserStats {
     pub address: String,
     pub total_volume: f64,
