@@ -1,5 +1,5 @@
 use crate::model::Transfer;
-use rand::{distributions::Alphanumeric, Rng};
+use rand::Rng;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub trait TransferGenerator {
@@ -13,6 +13,8 @@ pub struct TransferGenConfig {
     pub min_price: f64,
     pub max_price: f64,
     pub max_age_secs: u64,
+    pub min_uid: i32,
+    pub max_uid: i32,
 }
 
 impl Default for TransferGenConfig {
@@ -23,6 +25,8 @@ impl Default for TransferGenConfig {
             min_price: 0.1,
             max_price: 2.0,
             max_age_secs: 86_400 * 30,
+            min_uid: 1,
+            max_uid: 10,
         }
     }
 }
@@ -46,8 +50,11 @@ impl TransferGenerator for DefaultTransferGenerator {
 
         (0..count)
             .map(|_| {
-                let from = rand_address(&mut rng);
-                let to = rand_address(&mut rng);
+                let from = rng.gen_range(self.config.min_uid..self.config.max_uid);
+                let mut to = rng.gen_range(self.config.min_uid..self.config.max_uid);
+                while to == from {
+                    to = rng.gen_range(self.config.min_uid..self.config.max_uid);
+                }
                 let amount = rng.gen_range(self.config.min_amount..self.config.max_amount);
                 let usd_price = rng.gen_range(self.config.min_price..self.config.max_price);
                 let ts = now - rng.gen_range(0..self.config.max_age_secs);
@@ -62,13 +69,4 @@ impl TransferGenerator for DefaultTransferGenerator {
             })
             .collect()
     }
-}
-
-fn rand_address(rng: &mut impl Rng) -> String {
-    let suffix: String = rng
-        .sample_iter(&Alphanumeric)
-        .take(10)
-        .map(char::from)
-        .collect();
-    format!("0x{}", suffix)
 }
