@@ -15,4 +15,4 @@ clickhouse-client $PASSW -d "stockdb" --query="CREATE TABLE IF NOT EXISTS tblUse
     amount    Float64 CODEC(Gorilla),                          \
     usd_price Float64 CODEC(Gorilla)                           \
 ) ENGINE = MergeTree()                                         \
-ORDER BY (from, ts)";
+ORDER BY (from, to, ts)";

@@ -12,6 +12,7 @@ use anyhow::Result;
 
 use crate::generator::TransferGenerator;
 use crate::storage::{Storage, StorageConfig};
+use crate::model::Transfer;
 
 #[tokio::main]
 async fn main() {
@@ -19,21 +20,56 @@ async fn main() {
     let store_cng : StorageConfig;
     match read_config(){
         Ok(cng) => store_cng = cng,
-        Err(err) => panic!("{}", err),
+        Err(err) => panic!("Error read_config {}", err),
     }    
     let store = Storage::new(store_cng);
     
-    let transfers = DefaultTransferGenerator::default().generate(10);
+ //   let transfers = DefaultTransferGenerator::default().generate(10);
     
-    if let Err(err) = store.load_transfers(&transfers).await{
-        panic!("Error load_transfers {}", err)
+    let transfers = vec![
+        Transfer {
+            ts: 1,
+            from: "a".to_string(),
+            to: "b".to_string(),
+            amount: 1.0,
+            usd_price: 10.0},
+        Transfer {
+            ts: 2,
+            from: "b".to_string(),
+            to: "a".to_string(),
+            amount: 2.0,
+            usd_price: 5.0},
+        Transfer {
+            ts: 3,
+            from: "a".to_string(),
+            to: "b".to_string(),
+            amount: 3.0,
+            usd_price: 4.0},
+        Transfer {
+            ts: 4,
+            from: "b".to_string(),
+            to: "a".to_string(),
+            amount: 2.0,
+            usd_price: 3.0},
+        Transfer {
+            ts: 5,
+            from: "a".to_string(),
+            to: "b".to_string(),
+            amount: 1.0,
+            usd_price: 5.0},
+        ];
+
+    // if let Err(err) = store.load_transfers(&transfers).await{
+    //     panic!("Error load_transfers {}", err)
+    // }
+
+    if let Err(err) = calculate_user_stats(&store, (1,5)).await{
+        panic!("Error calculate_user_stats {}", err)
     }
 
-    let stats = calculate_user_stats(&transfers);
-
-    for stat in stats.iter().take(10) {
-        println!("{:?}", stat);
-    }
+    // for stat in stats.iter().take(10) {
+    //     println!("{:?}", stat);
+    // }
 }
 
 fn read_config()->Result<StorageConfig>{
