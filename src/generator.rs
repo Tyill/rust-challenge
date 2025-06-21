@@ -1,6 +1,5 @@
 use crate::model::Transfer;
 use rand::Rng;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 pub trait TransferGenerator {
     fn generate(&self, count: usize) -> Vec<Transfer>;
@@ -24,7 +23,7 @@ impl Default for TransferGenConfig {
             max_amount: 1000.0,
             min_price: 0.1,
             max_price: 2.0,
-            max_age_secs: 86_400 * 30,
+            max_age_secs: 1000,
             min_uid: 1,
             max_uid: 10,
         }
@@ -46,8 +45,7 @@ impl Default for DefaultTransferGenerator {
 impl TransferGenerator for DefaultTransferGenerator {
     fn generate(&self, count: usize) -> Vec<Transfer> {
         let mut rng = rand::thread_rng();
-        let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
-
+        
         (0..count)
             .map(|_| {
                 let from = rng.gen_range(self.config.min_uid..self.config.max_uid);
@@ -57,7 +55,7 @@ impl TransferGenerator for DefaultTransferGenerator {
                 }
                 let amount = rng.gen_range(self.config.min_amount..self.config.max_amount);
                 let usd_price = rng.gen_range(self.config.min_price..self.config.max_price);
-                let ts = now - rng.gen_range(0..self.config.max_age_secs);
+                let ts = rng.gen_range(1..self.config.max_age_secs);
 
                 Transfer {
                     ts,

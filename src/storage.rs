@@ -12,6 +12,17 @@ pub struct StorageConfig{
     db_user_password: String,
 }
 
+impl Default for StorageConfig {
+    fn default() -> Self {
+        Self {
+            db_url: "http://localhost:8123".to_string(),
+            db_name: "stockdb".to_string(),
+            db_user_name: "default".to_string(),
+            db_user_password: "alpha3".to_string(),
+        }
+    }
+}
+
 pub struct Storage{
     cng: StorageConfig,
 }
@@ -25,11 +36,15 @@ impl Storage {
     }
 
     fn new_client(&self)->clickhouse::Client{
-        let client = Client::default()
+        let mut client = Client::default()
             .with_url(self.cng.db_url.clone())
-            .with_user(self.cng.db_user_name.clone())
-            .with_password(self.cng.db_user_password.clone())
             .with_database(self.cng.db_name.clone());
+        if !self.cng.db_user_name.is_empty(){
+            client = client.with_user(self.cng.db_user_name.clone());
+        }
+        if !self.cng.db_user_password.is_empty(){
+            client = client.with_password(self.cng.db_user_password.clone());
+        }
         return client; 
     }
 
@@ -61,6 +76,13 @@ impl Storage {
         }
         insert_transfer.end().await?;
         insert_balance.end().await?;
+        return Ok(());
+    }
+
+    pub async fn clear(&self)->Result<()>{
+        let clt = self.new_client();
+        clt.query("TRUNCATE TABLE tblUserTransfer").execute().await?;
+        clt.query("TRUNCATE TABLE tblUserBalance").execute().await?;
         return Ok(());
     }
 
