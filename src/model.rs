@@ -19,7 +19,7 @@ pub struct Balance {
 
 #[derive(Debug)]
 pub struct UserStats {
-    pub uid: i32,
+    pub _uid: i32,
     pub total_volume: f64,
     pub avg_buy_price: f64,
     pub avg_sell_price: f64,
@@ -29,7 +29,7 @@ pub struct UserStats {
 impl UserStats {
     pub fn new(uid: i32) -> Self {
         Self {
-            uid,
+            _uid: uid,
             total_volume: 0.0,
             avg_buy_price: 0.0,
             avg_sell_price: 0.0,

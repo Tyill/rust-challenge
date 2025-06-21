@@ -11,7 +11,6 @@ pub struct StorageConfig{
     db_user_name: String,
     db_user_password: String,
 }
-
 impl Default for StorageConfig {
     fn default() -> Self {
         Self {
