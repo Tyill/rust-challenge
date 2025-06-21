@@ -61,8 +61,6 @@ async fn main() {
     }
     match calculate_user_stats(&store, (args.beginsec, args.endsec)).await{
         Ok(stats) => {
-            println!("stats len {}", stats.len());
-
             for stat in stats.iter().take(args.showcount) {
                 println!("{:?}", stat);
             }
