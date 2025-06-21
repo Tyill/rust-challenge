@@ -17,7 +17,7 @@
 ```
 
 3. Собрать исп файл и запустить:  
-`cargo build`
+`cargo build`  
 `./target/debug/rust_challenge`  
 Выведет 10 последних статов юзеров.
 
